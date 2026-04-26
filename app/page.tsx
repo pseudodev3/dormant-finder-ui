@@ -46,7 +46,7 @@ export default function Home() {
           <div className="flex gap-4">
             <div className="bg-[#161618] border border-gray-800 rounded-lg px-4 py-2 flex items-center gap-2">
               <ShieldCheck className="text-emerald-500 size-4" />
-              <span className="text-sm text-gray-300">BigQuery Public Node Connected</span>
+              <span className="text-sm text-gray-300">Dune Engine Connected</span>
             </div>
           </div>
         </div>
@@ -115,8 +115,8 @@ export default function Home() {
                 <div className="inline-block p-4 bg-blue-500/10 rounded-full animate-pulse">
                   <Search className="size-8 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-medium">Scanning Ethereum State...</h3>
-                <p className="text-gray-500">Querying BigQuery public records & verifying balances.</p>
+                <h3 className="text-xl font-medium">Querying Dune Analytics...</h3>
+                <p className="text-gray-500">Scanning indexed blockchain records & verifying balances.</p>
               </div>
             )}
 
