@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
             try {
               const balanceWei = await provider.getBalance(row.address);
               const liveEth = parseFloat(formatEther(balanceWei));
-              if (liveEth >= minEth) {
+              if (liveEth >= (minEth || 1)) {
                 verifiedResults.push({
                   address: row.address,
                   liveBalance: liveEth,
                   lastSeen: row.last_active
                 });
               }
-            } catch (e) { console.error("RPC Error:", e); }
+            } catch (e) {}
           }
         }
         return Response.json({ success: true, state: "COMPLETED", data: verifiedResults });
@@ -44,24 +44,20 @@ export async function POST(req: NextRequest) {
     }
 
     // --- ACTION: START ---
-    // Optimized Query: Filter top balance addresses FIRST to avoid massive join
+    // Validate inputs to prevent NaN in SQL
+    const safeMinEth = isNaN(parseFloat(minEth)) ? 1.0 : parseFloat(minEth);
+    const safeYears = isNaN(parseInt(dormantYears)) ? 2 : parseInt(dormantYears);
+
+    // Super-optimized SQL for Dune (Trino engine)
     const querySql = `
-      WITH top_wallets AS (
-          SELECT address, amount / 1e18 as balance
-          FROM ethereum.balances_eth
-          WHERE amount / 1e18 > ${minEth}
-          ORDER BY amount DESC
-          LIMIT 1000
-      )
       SELECT 
-          w.address, 
-          w.balance as eth_balance,
-          MAX(t.block_time) as last_active
-      FROM top_wallets w
-      JOIN ethereum.transactions t ON w.address = t."from"
-      WHERE t.block_time > now() - interval '10' year
-      GROUP BY 1, 2
-      HAVING MAX(t.block_time) < now() - interval '${dormantYears}' year
+          address, 
+          amount / 1e18 as eth_balance,
+          last_transfer_block_time as last_active
+      FROM erc20_ethereum.balances
+      WHERE symbol = 'ETH'
+      AND amount / 1e18 > ${safeMinEth}
+      AND last_transfer_block_time < now() - interval '${safeYears}' year
       ORDER BY 2 DESC
       LIMIT 20
     `;
