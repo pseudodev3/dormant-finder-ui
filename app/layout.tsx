@@ -1,19 +1,17 @@
+import { Inter } from 'next/font/google'
 import './globals.css'
-import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Dormant Wallet Explorer',
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = {
+  title: 'Dormant Explorer',
   description: 'High-value EVM wallet discovery',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-[#0a0a0b] antialiased`}>{children}</body>
     </html>
   )
 }
