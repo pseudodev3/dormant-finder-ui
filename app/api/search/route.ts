@@ -64,14 +64,16 @@ export async function POST(req: NextRequest) {
       LIMIT 10
     `;
 
-    const executeRes = await fetch("https://api.dune.com/api/v1/dune/query/execute/sql", {
+    // FIXED ENDPOINT: /api/v1/sql/execute
+    // FIXED PAYLOAD: "query_sql" -> "sql"
+    const executeRes = await fetch("https://api.dune.com/api/v1/sql/execute", {
       method: "POST",
       headers: {
         "X-DUNE-API-KEY": DUNE_API_KEY,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ 
-        query_sql: querySql,
+        sql: querySql,
         performance: "medium" 
       })
     });
