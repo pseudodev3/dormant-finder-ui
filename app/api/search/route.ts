@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
     const safeMinEth = parseFloat(minEth) || 1.0;
     const safeYears = parseInt(dormantYears) || 2;
 
-    // Standard Query using the most high-performance ETH balance table
     const querySql = `
       SELECT 
         address, 
@@ -64,8 +63,7 @@ export async function POST(req: NextRequest) {
       LIMIT 10
     `;
 
-    // FIXED ENDPOINT: /api/v1/sql/execute
-    // FIXED PAYLOAD: "query_sql" -> "sql"
+    // Removed performance flag to allow Dune to use the default for your plan
     const executeRes = await fetch("https://api.dune.com/api/v1/sql/execute", {
       method: "POST",
       headers: {
@@ -73,8 +71,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ 
-        sql: querySql,
-        performance: "medium" 
+        sql: querySql
       })
     });
 
